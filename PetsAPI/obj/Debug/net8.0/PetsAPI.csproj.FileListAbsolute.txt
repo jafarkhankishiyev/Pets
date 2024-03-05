@@ -35,3 +35,4 @@ C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\PetsAPI.pdb
 C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\PetsAPI.genruntimeconfig.cache
 C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\ref\PetsAPI.dll
 C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Npgsql.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\PetsAPI.sourcelink.json

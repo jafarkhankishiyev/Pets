@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ConsolePets")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89f3ec194f6156285d5d53d4b9ee043a386e41ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("ConsolePets")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ConsolePets")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

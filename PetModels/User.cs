@@ -14,6 +14,7 @@ namespace Pets.Models
         private Pet[] ownedPets;
         private PetFood[] ownedFood;
 
+        public int Id { get; }
         public double CashBalance { get; set; }
         public string UserName { get; set; }
         public Pet[] OwnedPets { get { return ownedPets; } set { ownedPets = value; } }

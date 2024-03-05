@@ -10,6 +10,7 @@ namespace Pets.Models.Pets
     public class Pet
     {
         //properties
+        public int Id { get; protected set; }
         public string Name { get; protected set; }
         public FurType FurColor { get; protected set; }
         public MoodType Mood { get; set; }
