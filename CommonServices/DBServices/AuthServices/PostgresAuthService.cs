@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace CommonServices.DBServices.AuthServices;
 
-internal class PostgresAuthService(NpgsqlDataSource dataSource) : IAuthService
+public class PostgresAuthService(string connectionString) : IAuthService
 {
-    private NpgsqlDataSource _dataSource { get; } = dataSource;
+    private NpgsqlDataSource AuthDataSource { get; } = NpgsqlDataSource.Create(connectionString);
 
     public async Task<Guid> LogIn(string username, string password)
     {
-        var command = _dataSource.CreateCommand("SELECT name FROM users WHERE name=@UserName;");
+        var command = AuthDataSource.CreateCommand("SELECT name FROM users WHERE name=@UserName");
         command.Parameters.AddWithValue("@UserName", username);
 
         using var reader = await command.ExecuteReaderAsync();
@@ -29,12 +29,12 @@ internal class PostgresAuthService(NpgsqlDataSource dataSource) : IAuthService
             result = reader.GetString(0);
         }
 
-        if (result == string.Empty)
+        if (string.IsNullOrWhiteSpace(result))
         {
             throw new WrongUsernameException();
         }
 
-        var passwordCommand = _dataSource.CreateCommand("SELECT password FROM users WHERE name=@UserName");
+        var passwordCommand = AuthDataSource.CreateCommand("SELECT password FROM users WHERE name=@UserName");
         passwordCommand.Parameters.AddWithValue("@UserName", username);
 
         using var passwordReader = await passwordCommand.ExecuteReaderAsync();
@@ -61,7 +61,10 @@ internal class PostgresAuthService(NpgsqlDataSource dataSource) : IAuthService
             throw new WrongUsernameException();
         }
 
-        var getUserIdCommand = _dataSource.CreateCommand("SELECT id FROM users WHERE name=@UserName AND password=@Password");
+        var getUserIdCommand = AuthDataSource.CreateCommand("SELECT id FROM users WHERE name=@UserName AND password=@Password");
+        getUserIdCommand.Parameters.AddWithValue("@UserName", username);
+        getUserIdCommand.Parameters.AddWithValue("@Password", hashedInputPass.ToString());
+
         using var userIdReader = await getUserIdCommand.ExecuteReaderAsync();
 
         var userId = 0;
@@ -71,17 +74,40 @@ internal class PostgresAuthService(NpgsqlDataSource dataSource) : IAuthService
             userId = userIdReader.GetInt32(0);
         }
 
-        var token = new Guid();
+        var checkAvailableTokensCommand = AuthDataSource.CreateCommand($"SELECT token, valid_until FROM users_tokens WHERE user_id = {userId}");
+        var availableTokensReader = await checkAvailableTokensCommand.ExecuteReaderAsync();
 
-        var insertNewTokenCommand = _dataSource.CreateCommand($"INSERT INTO users_tokens (token, user_id, valid_until) " +
-            $"VALUES ({token}, {userId}, {DateTime.UtcNow.AddHours(5)})");
+        var token = Guid.Empty;
+        while (await availableTokensReader.ReadAsync()) 
+        {
+            if(availableTokensReader.GetDateTime(1) > DateTime.UtcNow)
+            {
+                token = availableTokensReader.GetGuid(0);
+            }
+            else
+            {
+                var deleteInvalidTokenCommand = AuthDataSource.CreateCommand($"DELETE FROM users_tokens WHERE valid_until='{availableTokensReader.GetDateTime(1)}'");
+                await deleteInvalidTokenCommand.ExecuteNonQueryAsync();
+            }
+        }
+
+        if(token != Guid.Empty)
+        {
+            return token;
+        }
+
+        token = Guid.NewGuid();
+
+        var insertNewTokenCommand = AuthDataSource.CreateCommand($"INSERT INTO users_tokens (token, user_id, valid_until) VALUES ('{token}', {userId}, '{DateTime.UtcNow.AddHours(5)}')");
+
+        await insertNewTokenCommand.ExecuteNonQueryAsync();
         
         return token;
     }
 
     public async Task<bool> Register(string username, string password)
     {
-        var checkUserNameCommand = _dataSource.CreateCommand("SELECT name FROM users WHERE name = @UserName");
+        var checkUserNameCommand = AuthDataSource.CreateCommand("SELECT name FROM users WHERE name = @UserName");
         checkUserNameCommand.Parameters.AddWithValue("@UserName", username);
 
         using var userNameReader = await checkUserNameCommand.ExecuteReaderAsync();
@@ -106,9 +132,10 @@ internal class PostgresAuthService(NpgsqlDataSource dataSource) : IAuthService
             hashedPass.Append(passByte.ToString("x2").ToLower());
         }
 
-        var addUserCommand = _dataSource.CreateCommand($"INSERT INTO users (name, password, cash_balance) " +
-            $"VALUES (@UserName, {hashedPass}, 500)");
+        var addUserCommand = AuthDataSource.CreateCommand($"INSERT INTO users (name, password, cash_balance) VALUES (@UserName, '{hashedPass}', 500)");
         addUserCommand.Parameters.AddWithValue("@UserName", username);
+
+        await addUserCommand.ExecuteNonQueryAsync();
 
         return true;
     }

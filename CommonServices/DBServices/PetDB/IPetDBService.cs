@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pets.Models.Enumerations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace CommonServices.DBServices.PetDB;
 
 public interface IPetDBService
 {
-    void SetMood();
-    void SetHunger();
+    Task SetMood(MoodType mood);
+    Task SetHunger(HungerType hunger);
 }

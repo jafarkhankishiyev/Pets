@@ -8,6 +8,6 @@ namespace CommonServices.Exceptions
 {
     public class TakenUsernameException : Exception
     {
-        public string _message = "This username is taken!";
+        public string Message = "This username is taken!";
     }
 }

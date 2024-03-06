@@ -11,8 +11,9 @@ namespace CommonServices.DBServices.UserDB;
 
 public interface IUserDBService
 {
-    void AddPet(Pet pet);
-    void SetCash(int balance);
-    void AddFood(PetFood food);
-    void RemoveFood(PetFood food);
+    Task AddPet(Pet pet);
+    Task SetCash(double balance);
+    Task AddFood(PetFood food);
+    Task RemoveFood(PetFood food);
+    Task<User> GetUser(Guid token);
 }

@@ -1,27 +1,118 @@
 ﻿
 using CommonServices.PetServices;
-using CommonServices;
+using CommonServices.DBServices.AuthServices;
 using Pets.Models.Pets;
 using Pets.Models;
 using ConsolePets.Services;
 using ConsolePets.Exceptions;
+using CommonServices.DBServices.UserDB;
+using CommonServices;
+using CommonServices.DBServices.PetDB;
 
-string uName = string.Empty;
-while (string.IsNullOrEmpty(uName))
+//string uName = string.Empty;
+//while (string.IsNullOrEmpty(uName))
+//{
+//    Console.Write("Welcome, dear fellow! What's your name?\n");
+//    uName = Console.ReadLine();
+//}
+//User user = new(uName);
+
+
+var connectionString = "Server=localhost;User Id = postgres; Password = 123; Database=pets";
+
+var authService = new PostgresAuthService(connectionString);
+
+var token = Guid.Empty;
+
+
+while(token == Guid.Empty)
 {
-    Console.Write("Welcome, dear fellow! What's your name?\n");
-    uName = Console.ReadLine();
+    Console.Write("Do you want to register or log in? Provide 1 or 2 to choose:\n");
+    var answer = Console.ReadLine();
+
+    if(!Int32.TryParse(answer, out var ansInt) || ansInt > 2 || ansInt < 1)
+    {
+        continue;
+    }
+
+    if(ansInt == 1)
+    {
+        Console.Write("Ok! Provide a username: \n");
+        var inputName = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(inputName))
+        {
+            continue;
+        }
+
+        Console.Write("Provide a password longer of 8+ characters: \n");
+        var inputPassword = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(inputPassword) || inputPassword.Length < 8) 
+        {
+            continue;
+        }
+
+        bool registered;
+        try
+        {
+            registered = await authService.Register(inputName, inputPassword);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            continue;
+        }
+
+        if(registered)
+        {
+            Console.Write("Success\n");
+        }
+        else
+        {
+            Console.Write("Registration failed\n");
+        }
+    }
+    
+    if(ansInt == 2)
+    {
+        Console.Write("Username:\n");
+        var userName = Console.ReadLine();
+        Console.WriteLine("Password:\n");
+        var password = Console.ReadLine(); 
+
+        if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
+        {
+            continue;
+        }
+
+        try
+        {
+            token = await authService.LogIn(userName, password);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            continue;
+        }
+
+        if(token == Guid.Empty)
+        {
+            Console.Write("Something went wrong.\n");
+        }
+    }
 }
-User user = new(uName);
-UserConsoleService userConsoleService = new(new UserService(user));
-bool petAdded = false;
-while (!petAdded)
-{
-    Console.Write($"Nice to meet you, {user.UserName}!\n");
-    petAdded = userConsoleService.AddPet();
-}
+
+var userDB = await PostgresUserDBService.UserDBFactory(connectionString, token);
+
+var user = userDB.UserToServe;
+
+UserConsoleService userConsoleService = new(new UserService(user, userDB));
+
+
 bool exitOption = false;
 Console.Clear();
+
 while (!exitOption)
 {
     Console.Write("\n\nGreat! Now you can decide what to do, provide number: \n1. Feed, command, pet, and play with pets\n2. View current pets, balance, and food. \n3. Add pets\n4. Go to work\n5. Go shopping\n");
@@ -32,7 +123,7 @@ while (!exitOption)
         {
             if (value == 1)
             {
-                GetInteractionOptions();
+                await GetInteractionOptionsAsync();
             }
             else if (value == 2)
             {
@@ -41,7 +132,7 @@ while (!exitOption)
             else if (value == 3)
             {
                 Console.Write("\n Great! Let's add another pet");
-                petAdded = userConsoleService.AddPet();
+                bool petAdded = await userConsoleService.AddPetAsync();
                 foreach (Pet pet in user.OwnedPets)
                 {
                     Console.Write(pet.Name + "\n");
@@ -49,11 +140,11 @@ while (!exitOption)
             }
             else if (value == 4)
             {
-                userConsoleService.Work();
+                await userConsoleService.WorkAsync(connectionString);
             }
             else if (value == 5)
             {
-                userConsoleService.BuyFood();
+                await userConsoleService.BuyFoodAsync();
             }
         }
         else
@@ -66,7 +157,7 @@ while (!exitOption)
         throw new NoSuchOptionException();
     }
 }
-void FeedPet(int val)
+async Task FeedPetAsync(int val)
 {
     if (user.OwnedFood.Length > 0)
     {
@@ -82,8 +173,8 @@ void FeedPet(int val)
         {
             if (foodAnswer > 0 && foodAnswer <= user.OwnedFood.Length)
             {
-                PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(user.OwnedPets[val - 1]));
-                petConsoleService.GetFed(user, user.OwnedFood[foodAnswer - 1]);
+                PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(user.OwnedPets[val - 1], new PostgresPetDBService(connectionString, user.OwnedPets[val - 1])));
+                await petConsoleService.GetFedAsync(user, user.OwnedFood[foodAnswer - 1]);
             }
             else
                 throw new NoSuchOptionException();
@@ -99,15 +190,15 @@ void FeedPet(int val)
     }
 }
 
-void CommandPet(int val)
+async Task CommandPetAsync(int val)
 {
-    userConsoleService.Command(user.OwnedPets[val - 1]);
+    await userConsoleService.CommandAsync(user.OwnedPets[val - 1], connectionString);
 }
 
-void PetPet(int val)
+async Task PetPetAsync(int val)
 {
-    PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(user.OwnedPets[val - 1]));
-    petConsoleService.GetPet();
+    PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(user.OwnedPets[val - 1], new PostgresPetDBService(connectionString, user.OwnedPets[val - 1])));
+    await petConsoleService.GetPetAsync();
 }
 
 void ViewCurrent()
@@ -115,7 +206,7 @@ void ViewCurrent()
     Console.Write("\nCurrent Pets:\n");
     foreach (Pet p in user.OwnedPets)
     {
-        Console.Write($"\n\n{p.Name} {p}\nMood: {p.Hunger}\nHunger: {p.Hunger}");
+        Console.Write($"\n\n{p.Name} {p}\nMood: {p.Mood}\nHunger: {p.Hunger}");
     }
     Console.Write($"\n\nCurrent balance: ${user.CashBalance}");
     Console.Write("\n\nCurret foods:\n");
@@ -127,7 +218,7 @@ void ViewCurrent()
     }
 }
 
-void GetInteractionOptions()
+async Task GetInteractionOptionsAsync()
 {
     Console.Write("\nOkay. Which pet do you want to interact with?\n");
     for (int i = 0; i < user.OwnedPets.Length; i++)
@@ -143,19 +234,19 @@ void GetInteractionOptions()
             {
                 if (v == 1)
                 {
-                    FeedPet(val);
+                    await FeedPetAsync(val);
                 }
                 else if (v == 2)
                 {
-                    CommandPet(val);
+                    await CommandPetAsync(val);
                 }
                 else if (v == 3)
                 {
-                    PetPet(val);
+                    await PetPetAsync(val);
                 }
                 else if (v == 4)
                 {
-                    new PetConsoleService(PetService.GetAccordingPetService(user.OwnedPets[val - 1])).Play();
+                    await new PetConsoleService(PetService.GetAccordingPetService(user.OwnedPets[val - 1], new PostgresPetDBService(connectionString, user.OwnedPets[val - 1]))).PlayAsync();
                 }
             }
             else

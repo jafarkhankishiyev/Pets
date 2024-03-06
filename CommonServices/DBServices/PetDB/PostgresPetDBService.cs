@@ -1,4 +1,6 @@
 ﻿using Npgsql;
+using Pets.Models;
+using Pets.Models.Enumerations;
 using Pets.Models.Pets;
 using System;
 using System.Collections.Generic;
@@ -10,26 +12,28 @@ namespace CommonServices.DBServices.PetDB;
 
 public class PostgresPetDBService : IPetDBService
 {
-    private NpgsqlDataSource _dataSource;
-    private Pet _pet;
+    private NpgsqlDataSource PetDataSource;
+
+    internal Pet PetToServe;
+
     public PostgresPetDBService(string connectionString, Pet pet)
     {
-        _dataSource = NpgsqlDataSource.Create(connectionString);
-        _pet = pet;
+        PetDataSource = NpgsqlDataSource.Create(connectionString);
+        PetToServe = pet;
     }
 
-    public void SetHunger(int hunger)
+    public async Task SetHunger(HungerType hunger)
     {
-        throw new NotImplementedException();
+        var setHungerCommand =  PetDataSource.CreateCommand($"UPDATE users_pets SET pet_hunger = {(int)hunger} WHERE id = {PetToServe.Id}");
+
+        await setHungerCommand.ExecuteNonQueryAsync();
     }
 
-    public void SetHunger()
+    public async Task SetMood(MoodType mood)
     {
-        throw new NotImplementedException();
+        var setMoodCommand = PetDataSource.CreateCommand($"UPDATE users_pets SET pet_mood = {(int)mood} WHERE id = {PetToServe.Id}");
+
+        await setMoodCommand.ExecuteNonQueryAsync();
     }
 
-    public void SetMood()
-    {
-        throw new NotImplementedException();
-    }
 }

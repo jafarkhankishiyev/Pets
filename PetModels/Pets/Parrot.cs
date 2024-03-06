@@ -10,6 +10,8 @@ namespace Pets.Models.Pets
 {
     public class Parrot : Pet
     {
+        public Parrot() { }
+
         public Parrot(string name, FurType furColor) : base(name, furColor)
         {
             Name = name;

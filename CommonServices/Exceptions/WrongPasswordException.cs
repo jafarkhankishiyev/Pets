@@ -8,5 +8,5 @@ namespace CommonServices.Exceptions;
 
 public class WrongPasswordException : Exception
 {
-    public string _message = "Wrong password!"; 
+    public string Message = "Wrong password!"; 
 }

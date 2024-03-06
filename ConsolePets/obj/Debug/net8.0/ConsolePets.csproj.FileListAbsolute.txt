@@ -21,3 +21,4 @@ C:\Users\JafarKh\Documents\GitHub\Pets\ConsolePets\bin\Debug\net8.0\Microsoft.Ex
 C:\Users\JafarKh\Documents\GitHub\Pets\ConsolePets\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
 C:\Users\JafarKh\Documents\GitHub\Pets\ConsolePets\bin\Debug\net8.0\Npgsql.dll
 C:\Users\JafarKh\Documents\GitHub\Pets\ConsolePets\obj\Debug\net8.0\ConsoleP.2C378342.Up2Date
+C:\Users\JafarKh\Documents\GitHub\Pets\ConsolePets\obj\Debug\net8.0\ConsolePets.sourcelink.json

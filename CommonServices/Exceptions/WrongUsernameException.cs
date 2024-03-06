@@ -8,5 +8,5 @@ namespace CommonServices.Exceptions;
 
 public class WrongUsernameException : Exception
 {
-    public string _message = "Wrong Username!"; 
+    public string Message = "Wrong Username!"; 
 }

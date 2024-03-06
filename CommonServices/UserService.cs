@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CommonServices.PetServices;
 using Pets.Models.Enumerations.PetCommands;
+using CommonServices.DBServices.UserDB;
+using CommonServices.DBServices.PetDB;
 
 namespace CommonServices
 {
@@ -16,24 +18,29 @@ namespace CommonServices
     {
         public User UserToServe { get; set; }
 
-        public UserService(User user)
+        public IUserDBService UserDB { get; }
+
+        public UserService(User user, IUserDBService userDB)
         {
             UserToServe = user;
+            UserDB = userDB;
         }
 
-        public void Work()
+        public async Task WorkAsync(string connectionString)
         {
             foreach (Pet p in UserToServe.OwnedPets)
             {
-                PetService petService = PetService.GetAccordingPetService(p);
-                petService.MoodDown();
+                var petService = PetService.GetAccordingPetService(p, new PostgresPetDBService(connectionString, p));
+                await petService.MoodDown();
             }
             UserToServe.CashBalance += 50;
+            
+            await UserDB.SetCash(UserToServe.CashBalance);
         }
 
-        public PetFood Command(PetService petService, int commandExecuted)
+        public async Task<PetFood> CommandAsync(PetService petService, int commandExecuted)
         {
-            petService.AffectByPlayOrCommand();
+            await petService.AffectByPlayOrCommandAsync();
 
             if (petService is BearService && (BearCommands)commandExecuted is BearCommands.Forest)
             {
@@ -52,41 +59,49 @@ namespace CommonServices
                 Array.Resize(ref arrToResize, 1);
                 UserToServe.OwnedFood = arrToResize;
                 UserToServe.OwnedFood[^1] = petFood;
+
+                await UserDB.AddFood(petFood);
                 return petFood;
             }
             return null;
         }
 
-        public void BuyFood(FoodType petFoodType)
+        public async Task BuyFoodAsync(FoodType petFoodType)
         {
-                PetFood petFood = new PetFood(petFoodType);
-                var arrToResize = UserToServe.OwnedFood;
-                Array.Resize(ref arrToResize, UserToServe.OwnedFood.Length + 1);
-                UserToServe.OwnedFood = arrToResize;
-                UserToServe.OwnedFood[^1] = petFood;
-                UserToServe.CashBalance -= petFood.Price;
+            PetFood petFood = new PetFood(petFoodType);
+            var arrToResize = UserToServe.OwnedFood;
+            Array.Resize(ref arrToResize, UserToServe.OwnedFood.Length + 1);
+            UserToServe.OwnedFood = arrToResize;
+            UserToServe.OwnedFood[^1] = petFood;
+            UserToServe.CashBalance -= petFood.Price;
+
+            await UserDB.AddFood(petFood);
+            await UserDB.SetCash(UserToServe.CashBalance);    
         }
 
-        public bool AddPet(Pet pet)
+        public async Task<bool> AddPetAsync(Pet pet)
         {
-                if (pet != null)
+            if (pet != null)
+            {
+                if (UserToServe.OwnedPets.Length == 1 && UserToServe.OwnedPets[0].Name == "None")
                 {
-                    if (UserToServe.OwnedPets.Length == 1 && UserToServe.OwnedPets[0].Name == "None")
-                    {
-                        UserToServe.OwnedPets[0] = pet;
-                        return true;
-                    }
-                    else
-                    {
-                        var arrToResize = UserToServe.OwnedPets;
-                        Array.Resize(ref arrToResize, UserToServe.OwnedPets.Length + 1);
-                        UserToServe.OwnedPets = arrToResize;
-                        UserToServe.OwnedPets[^1] = pet;
-                        return true;
-                    }
+                    UserToServe.OwnedPets[0] = pet;
+                    return true;
                 }
                 else
-                    return false;
+                {
+                    var arrToResize = UserToServe.OwnedPets;
+                    Array.Resize(ref arrToResize, UserToServe.OwnedPets.Length + 1);
+                    UserToServe.OwnedPets = arrToResize;
+                    UserToServe.OwnedPets[^1] = pet;
+
+                    await UserDB.AddPet(pet);
+
+                    return true;
+                }
+            }
+            else
+                return false;
         }
     }
 }

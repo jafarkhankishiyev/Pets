@@ -1,4 +1,5 @@
-﻿using Models.CommandDictionaries;
+﻿using CommonServices.DBServices.PetDB;
+using Models.CommandDictionaries;
 using Pets.Models.Enumerations;
 using Pets.Models.Enumerations.PetCommands;
 using Pets.Models.Pets;
@@ -6,7 +7,7 @@ using System.ComponentModel;
 
 namespace CommonServices.PetServices
 {
-    public class BearService(Pet pet) : PetService(pet)
+    public class BearService(Pet pet, IPetDBService petDB) : PetService(pet, petDB)
     {
         public override string[] GetCommands()
         {
