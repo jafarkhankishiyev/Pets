@@ -11,6 +11,8 @@ namespace CommonServices.DBServices.UserDB;
 
 public interface IUserDBService
 {
+    User UserToServe { get;  set; }
+
     Task AddPet(Pet pet);
     Task SetCash(double balance);
     Task AddFood(PetFood food);

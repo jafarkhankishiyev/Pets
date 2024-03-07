@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace CommonServices.PetServices
 {
-    public class BearService(Pet pet, IPetDBService petDB) : PetService(pet, petDB)
+    public class BearService(IPetDBService petDB) : PetService(petDB)
     {
         public override string[] GetCommands()
         {

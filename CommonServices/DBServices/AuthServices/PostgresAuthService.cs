@@ -1,5 +1,6 @@
 ﻿using CommonServices.DBServices;
 using CommonServices.Exceptions;
+using Models.AuthModels;
 using Npgsql;
 using Pets.Models;
 using System;
@@ -15,7 +16,7 @@ public class PostgresAuthService(string connectionString) : IAuthService
 {
     private NpgsqlDataSource AuthDataSource { get; } = NpgsqlDataSource.Create(connectionString);
 
-    public async Task<Guid> LogIn(string username, string password)
+    public async Task<TokenResponse> LogIn(string username, string password)
     {
         var command = AuthDataSource.CreateCommand("SELECT name FROM users WHERE name=@UserName");
         command.Parameters.AddWithValue("@UserName", username);
@@ -58,7 +59,7 @@ public class PostgresAuthService(string connectionString) : IAuthService
 
         if(hashedInputPass.ToString() != realPass)
         {
-            throw new WrongUsernameException();
+            throw new WrongPasswordException();
         }
 
         var getUserIdCommand = AuthDataSource.CreateCommand("SELECT id FROM users WHERE name=@UserName AND password=@Password");
@@ -78,11 +79,14 @@ public class PostgresAuthService(string connectionString) : IAuthService
         var availableTokensReader = await checkAvailableTokensCommand.ExecuteReaderAsync();
 
         var token = Guid.Empty;
+        var validUntil = DateTime.MinValue;
+
         while (await availableTokensReader.ReadAsync()) 
         {
             if(availableTokensReader.GetDateTime(1) > DateTime.UtcNow)
             {
                 token = availableTokensReader.GetGuid(0);
+                validUntil = availableTokensReader.GetDateTime(1);
             }
             else
             {
@@ -93,16 +97,17 @@ public class PostgresAuthService(string connectionString) : IAuthService
 
         if(token != Guid.Empty)
         {
-            return token;
+            return new TokenResponse(token, validUntil);
         }
 
         token = Guid.NewGuid();
+        validUntil = DateTime.UtcNow.AddHours(5);
 
-        var insertNewTokenCommand = AuthDataSource.CreateCommand($"INSERT INTO users_tokens (token, user_id, valid_until) VALUES ('{token}', {userId}, '{DateTime.UtcNow.AddHours(5)}')");
+        var insertNewTokenCommand = AuthDataSource.CreateCommand($"INSERT INTO users_tokens (token, user_id, valid_until) VALUES ('{token}', {userId}, '{validUntil}')");
 
         await insertNewTokenCommand.ExecuteNonQueryAsync();
         
-        return token;
+        return new TokenResponse(token, validUntil);
     }
 
     public async Task<bool> Register(string username, string password)

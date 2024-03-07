@@ -8,6 +8,7 @@ using ConsolePets.Exceptions;
 using CommonServices.DBServices.UserDB;
 using CommonServices;
 using CommonServices.DBServices.PetDB;
+using Models.AuthModels;
 
 //string uName = string.Empty;
 //while (string.IsNullOrEmpty(uName))
@@ -22,10 +23,10 @@ var connectionString = "Server=localhost;User Id = postgres; Password = 123; Dat
 
 var authService = new PostgresAuthService(connectionString);
 
-var token = Guid.Empty;
+var tokenResponse = new TokenResponse(Guid.Empty, DateTime.MinValue);
 
 
-while(token == Guid.Empty)
+while(tokenResponse.Token == Guid.Empty)
 {
     Console.Write("Do you want to register or log in? Provide 1 or 2 to choose:\n");
     var answer = Console.ReadLine();
@@ -88,7 +89,7 @@ while(token == Guid.Empty)
 
         try
         {
-            token = await authService.LogIn(userName, password);
+            tokenResponse = await authService.LogIn(userName, password);
         }
         catch (Exception ex)
         {
@@ -96,18 +97,18 @@ while(token == Guid.Empty)
             continue;
         }
 
-        if(token == Guid.Empty)
+        if(tokenResponse.Token == Guid.Empty)
         {
             Console.Write("Something went wrong.\n");
         }
     }
 }
 
-var userDB = await PostgresUserDBService.UserDBFactory(connectionString, token);
+var userDB = await PostgresUserDBService.UserDBFactory(connectionString, tokenResponse.Token);
 
 var user = userDB.UserToServe;
 
-UserConsoleService userConsoleService = new(new UserService(user, userDB));
+UserConsoleService userConsoleService = new(new UserService(userDB));
 
 
 bool exitOption = false;
@@ -173,7 +174,7 @@ async Task FeedPetAsync(int val)
         {
             if (foodAnswer > 0 && foodAnswer <= user.OwnedFood.Length)
             {
-                PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(user.OwnedPets[val - 1], new PostgresPetDBService(connectionString, user.OwnedPets[val - 1])));
+                PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(new PostgresPetDBService(connectionString, user.OwnedPets[val - 1])));
                 await petConsoleService.GetFedAsync(user, user.OwnedFood[foodAnswer - 1]);
             }
             else
@@ -197,7 +198,7 @@ async Task CommandPetAsync(int val)
 
 async Task PetPetAsync(int val)
 {
-    PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(user.OwnedPets[val - 1], new PostgresPetDBService(connectionString, user.OwnedPets[val - 1])));
+    PetConsoleService petConsoleService = new(PetService.GetAccordingPetService(new PostgresPetDBService(connectionString, user.OwnedPets[val - 1])));
     await petConsoleService.GetPetAsync();
 }
 
@@ -246,7 +247,7 @@ async Task GetInteractionOptionsAsync()
                 }
                 else if (v == 4)
                 {
-                    await new PetConsoleService(PetService.GetAccordingPetService(user.OwnedPets[val - 1], new PostgresPetDBService(connectionString, user.OwnedPets[val - 1]))).PlayAsync();
+                    await new PetConsoleService(PetService.GetAccordingPetService(new PostgresPetDBService(connectionString, user.OwnedPets[val - 1]))).PlayAsync();
                 }
             }
             else

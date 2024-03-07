@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsolePets.Exceptions
+namespace CommonServices.Exceptions
 {
     internal class WrongNameException : Exception
     {

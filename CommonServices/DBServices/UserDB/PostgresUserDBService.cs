@@ -16,7 +16,7 @@ public class PostgresUserDBService : IUserDBService
 {
     private NpgsqlDataSource UserDataSource { get; }
 
-    public User UserToServe { get; private set; }
+    public User UserToServe { get; set; }
 
     public PostgresUserDBService(string connectionString)
     {

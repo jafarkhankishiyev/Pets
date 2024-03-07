@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CommonServices.PetServices
 {
-    public class CatService(Pet pet, IPetDBService petDB) : PetService(pet, petDB)
+    public class CatService(IPetDBService petDB) : PetService(petDB)
     {
         public override string[] GetCommands()
         {

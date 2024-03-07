@@ -20,9 +20,9 @@ namespace CommonServices
 
         public IUserDBService UserDB { get; }
 
-        public UserService(User user, IUserDBService userDB)
+        public UserService(IUserDBService userDB)
         {
-            UserToServe = user;
+            UserToServe = userDB.UserToServe;
             UserDB = userDB;
         }
 
@@ -30,9 +30,10 @@ namespace CommonServices
         {
             foreach (Pet p in UserToServe.OwnedPets)
             {
-                var petService = PetService.GetAccordingPetService(p, new PostgresPetDBService(connectionString, p));
-                await petService.MoodDown();
+                var petService = PetService.GetAccordingPetService(new PostgresPetDBService(connectionString, p));
+                await petService.MoodDownAsync();
             }
+
             UserToServe.CashBalance += 50;
             
             await UserDB.SetCash(UserToServe.CashBalance);

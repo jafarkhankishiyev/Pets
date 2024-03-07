@@ -14,7 +14,7 @@ public class PostgresPetDBService : IPetDBService
 {
     private NpgsqlDataSource PetDataSource;
 
-    internal Pet PetToServe;
+    public Pet PetToServe { get; set; }
 
     public PostgresPetDBService(string connectionString, Pet pet)
     {
