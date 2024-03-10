@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 using ConsolePets.Services;
 using CommonServices;
 using CommonServices.PetServices;
-
 using Pets.Models.Enumerations;
-using ConsolePets.Exceptions;
+using CommonServices.Exceptions;
 using CommonServices.DBServices.PetDB;
 
 namespace ConsolePets.Services;
@@ -24,9 +23,9 @@ internal class UserConsoleService
         _userService = userService;
     }
 
-    public async Task WorkAsync(string connectionString)
+    public async Task WorkAsync()
     {
-        await _userService.WorkAsync(connectionString);
+        await _userService.WorkAsync();
         StringBuilder text = new StringBuilder("\nGotta work to feed my pets... See you!");
         text.Append($"\nIt ain't much but it's fair work. I can finally rest. \nBalance = {_userService.UserToServe.CashBalance}");
         Console.Write(text.ToString());

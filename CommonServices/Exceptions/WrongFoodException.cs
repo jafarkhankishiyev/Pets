@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace CommonServices.Exceptions;
 
-namespace CommonServices.Exceptions
+public class WrongFoodException : Exception
 {
-    internal class WrongFoodException : Exception
-    {
-        public WrongFoodException() 
-        {
-            Console.WriteLine("This food is not appropriate for this pet.");
-        }
-    }
+    public new string Message = "This food is not appropriate for this pet.";
 }

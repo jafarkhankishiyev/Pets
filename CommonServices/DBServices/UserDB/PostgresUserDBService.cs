@@ -1,20 +1,15 @@
-﻿using CommonServices.DBServices.AuthServices;
+﻿using CommonServices.Exceptions;
 using Npgsql;
 using Pets.Models;
 using Pets.Models.Enumerations;
 using Pets.Models.Pets;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace CommonServices.DBServices.UserDB;
 
 public class PostgresUserDBService : IUserDBService
 {
-    private NpgsqlDataSource UserDataSource { get; }
+    public DbDataSource UserDataSource { get; }
 
     public User UserToServe { get; set; }
 
@@ -22,29 +17,17 @@ public class PostgresUserDBService : IUserDBService
     {
         UserDataSource = NpgsqlDataSource.Create(connectionString);
     }
-
     public async Task AddPet(Pet pet)
     {
-        var petType = 0;
-
-        switch(pet)
+        var petType = pet switch
         {
-            case Bear:
-                petType = 1;
-                break;
-            case Cat: 
-                petType = 2; 
-                break;
-            case Dog: 
-                petType = 3; 
-                break;
-            case Parrot: 
-                petType = 4; 
-                break;
-            default:
-                petType = 0;
-                break;
-        }
+            Bear => 1,
+            Cat => 2,
+            Dog => 3,
+            Parrot => 4,
+            _ => 0,
+        };
+
         var addPetCommand = UserDataSource.CreateCommand($"INSERT INTO users_pets (user_id, pet_name, pet_hunger, pet_mood, pet_fur, pet_type) VALUES ({UserToServe.Id}, '{pet.Name}', {(int)pet.Hunger}, {(int)pet.Mood}, {(int)pet.FurColor}, {petType})");
 
         await addPetCommand.ExecuteNonQueryAsync();
@@ -159,5 +142,27 @@ public class PostgresUserDBService : IUserDBService
         userDB.UserToServe = user;
 
         return userDB;
+    }
+
+    public async Task ValidateToken(Guid token)
+    {
+        var validateTokenCommand = UserDataSource.CreateCommand($"SELECT valid_until FROM users_tokens WHERE token = '{token}';");
+
+        var validateTokenReader = await validateTokenCommand.ExecuteReaderAsync();
+
+        var valid = false;
+
+        while (await validateTokenReader.ReadAsync()) 
+        {
+            if(validateTokenReader.GetDateTime(0) > DateTime.UtcNow)
+            {
+                valid = true;
+            }
+        }
+
+        if(!valid)
+        {
+            throw new InvalidTokenException();
+        }
     }
 }

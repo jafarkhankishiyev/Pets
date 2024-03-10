@@ -1,47 +1,40 @@
 ﻿using Pets.Models.Enumerations;
-using Pets.Models.Pets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Pets.Models
+namespace Pets.Models;
+
+public class PetFood
 {
-    public class PetFood
+    public double Price { get; init; }
+    public string Name { get; init; }
+    public FoodType FoodType { get; init; }
+
+    public PetFood()
     {
-        public double Price { get; init; }
-        public string Name { get; init; }
-        public FoodType FoodType { get; init; }
+        Price = 0;
+        Name = string.Empty;
+    }
 
-        public PetFood()
+    public PetFood(FoodType food)
+    {
+        FoodType = food;
+        switch (food)
         {
-            Price = 0;
-            Name = string.Empty;
-        }
-
-        public PetFood(FoodType food)
-        {
-            FoodType = food;
-            switch (food)
-            {
-                case FoodType.ParrotFood:
-                    Price = 3.99;
-                    Name = "Parrot Food";
-                    break;
-                case FoodType.BearFood:
-                    Price = 7.99;
-                    Name = "Bear Food";
-                    break;
-                case FoodType.CatFood:
-                    Price = 4.99;
-                    Name = "Cat Food";
-                    break;
-                case FoodType.DogFood:
-                    Price = 5.99;
-                    Name = "Dog Food";
-                    break;
-            }
+            case FoodType.ParrotFood:
+                Price = 3.99;
+                Name = "Parrot Food";
+                break;
+            case FoodType.BearFood:
+                Price = 7.99;
+                Name = "Bear Food";
+                break;
+            case FoodType.CatFood:
+                Price = 4.99;
+                Name = "Cat Food";
+                break;
+            case FoodType.DogFood:
+                Price = 5.99;
+                Name = "Dog Food";
+                break;
         }
     }
 }

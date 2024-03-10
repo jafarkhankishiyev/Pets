@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace CommonServices.Exceptions;
 
 public class WrongUsernameException : Exception
 {
-    public string Message = "Wrong Username!"; 
+    public new string Message = "Wrong Username!"; 
 }

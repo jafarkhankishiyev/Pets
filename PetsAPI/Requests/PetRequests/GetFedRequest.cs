@@ -1,6 +1,6 @@
 ﻿using Pets.Models.Enumerations;
 
-namespace PetsAPI.Models.PetRequests
+namespace PetsAPI.Requests.PetRequests
 {
     public class GetFedRequest
     {

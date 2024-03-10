@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Pets.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace PetsAPI.Controllers
 {

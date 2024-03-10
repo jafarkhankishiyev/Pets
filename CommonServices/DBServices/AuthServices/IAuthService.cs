@@ -1,11 +1,4 @@
-﻿using CommonServices.DBServices;
-using Models.AuthModels;
-using Npgsql.Replication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Models.AuthModels;
 
 namespace CommonServices.DBServices.AuthServices;
 

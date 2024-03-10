@@ -5,7 +5,7 @@ using CommonServices.PetServices;
 using Microsoft.AspNetCore.Mvc;
 using Pets.Models;
 using Pets.Models.Pets;
-using PetsAPI.Models.UserRequests;
+using PetsAPI.Requests.UserRequests;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,8 +15,6 @@ namespace PetsAPI.Controllers
     [ApiController]
     public class UserController : MyBaseController
     {
-
-        // GET api/<UserController>/5
         [HttpGet("{token}")]
         public async Task<User> GetUser(Guid token)
         {
@@ -29,6 +27,8 @@ namespace PetsAPI.Controllers
         public async Task<double> Work(Guid token)
         {
             var userService = await GetUserService(token);
+
+            await userService.WorkAsync();
 
             return userService.UserToServe.CashBalance;
         }

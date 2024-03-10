@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace CommonServices.Exceptions;
 
-namespace CommonServices.Exceptions
+public class WrongNameException : Exception
 {
-    internal class WrongNameException : Exception
-    {
-        public WrongNameException() 
-        {
-            Console.WriteLine("A name should not be empty or contain numbers.");
-        }
-    }
+    public new string Message = "A name should not be empty.";
 }

@@ -1,13 +1,7 @@
-﻿using CommonServices;
-using CommonServices.PetServices;
-using Pets.Models.Pets;
+﻿using CommonServices.PetServices;
 using Pets.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using ConsolePets.Exceptions;
+using CommonServices.Exceptions;
 
 namespace ConsolePets.Services;
 

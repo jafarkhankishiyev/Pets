@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace CommonServices.Exceptions;
 
 public class WrongPasswordException : Exception
 {
-    public string Message = "Wrong password!"; 
+    public new string Message = "Wrong password!"; 
 }

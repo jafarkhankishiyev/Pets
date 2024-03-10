@@ -1,22 +1,13 @@
-﻿
-using CommonServices.PetServices;
+﻿using CommonServices.PetServices;
 using CommonServices.DBServices.AuthServices;
 using Pets.Models.Pets;
 using Pets.Models;
 using ConsolePets.Services;
-using ConsolePets.Exceptions;
+using CommonServices.Exceptions;
 using CommonServices.DBServices.UserDB;
 using CommonServices;
 using CommonServices.DBServices.PetDB;
 using Models.AuthModels;
-
-//string uName = string.Empty;
-//while (string.IsNullOrEmpty(uName))
-//{
-//    Console.Write("Welcome, dear fellow! What's your name?\n");
-//    uName = Console.ReadLine();
-//}
-//User user = new(uName);
 
 
 var connectionString = "Server=localhost;User Id = postgres; Password = 123; Database=pets";
@@ -141,7 +132,7 @@ while (!exitOption)
             }
             else if (value == 4)
             {
-                await userConsoleService.WorkAsync(connectionString);
+                await userConsoleService.WorkAsync();
             }
             else if (value == 5)
             {

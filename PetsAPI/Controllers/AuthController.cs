@@ -1,39 +1,36 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using CommonServices.DBServices.AuthServices;
-using Microsoft.AspNetCore.Identity.Data;
 using Models.AuthModels;
 
-namespace PetsAPI.Controllers
+namespace PetsAPI.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AuthController : MyBaseController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : MyBaseController
+    private PostgresAuthService ControllerAuthService;
+    public AuthController() 
     {
-        private PostgresAuthService ControllerAuthService;
-        public AuthController() 
-        {
-            ControllerAuthService = new PostgresAuthService(ConnectionString);
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> LogIn([FromBody] MyLoginRequest loginRequest)
-        {
-            var tokenResponse = await ControllerAuthService.LogIn(loginRequest.Username, loginRequest.Password);
-            return Ok(tokenResponse);
-        }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] MyRegistrationRequest registrationRequest)
-        {
-            var registered = await ControllerAuthService.Register(registrationRequest.Username, registrationRequest.Password);
-            
-            if(registered)
-            {
-                return Ok(registered);
-            }
-
-            return BadRequest();
-        } 
+        ControllerAuthService = new PostgresAuthService(ConnectionString);
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> LogIn([FromBody] MyLoginRequest loginRequest)
+    {
+        var tokenResponse = await ControllerAuthService.LogIn(loginRequest.Username, loginRequest.Password);
+        return Ok(tokenResponse);
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] MyRegistrationRequest registrationRequest)
+    {
+        var registered = await ControllerAuthService.Register(registrationRequest.Username, registrationRequest.Password);
+        
+        if(registered)
+        {
+            return Ok(registered);
+        }
+
+        return BadRequest();
+    } 
 }
