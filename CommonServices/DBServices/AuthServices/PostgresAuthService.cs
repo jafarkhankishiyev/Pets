@@ -62,14 +62,14 @@ public class PostgresAuthService(string connectionString) : IAuthService
 
         using var userIdReader = await getUserIdCommand.ExecuteReaderAsync();
 
-        var userId = 0;
+        var userId = new Int32();
 
         while (userIdReader.Read())
         {
             userId = userIdReader.GetInt32(0);
         }
 
-        var checkAvailableTokensCommand = AuthDataSource.CreateCommand($"SELECT token, valid_until FROM users_tokens WHERE user_id = {userId}");
+        var checkAvailableTokensCommand = AuthDataSource.CreateCommand($"SELECT token, valid_until FROM users_tokens WHERE user_id = {userId} AND valid_until >= '{DateTime.UtcNow}'");
         var availableTokensReader = await checkAvailableTokensCommand.ExecuteReaderAsync();
 
         var token = Guid.Empty;
@@ -77,16 +77,8 @@ public class PostgresAuthService(string connectionString) : IAuthService
 
         while (await availableTokensReader.ReadAsync()) 
         {
-            if(availableTokensReader.GetDateTime(1) > DateTime.UtcNow)
-            {
-                token = availableTokensReader.GetGuid(0);
-                validUntil = availableTokensReader.GetDateTime(1);
-            }
-            else
-            {
-                var deleteInvalidTokenCommand = AuthDataSource.CreateCommand($"DELETE FROM users_tokens WHERE valid_until='{availableTokensReader.GetDateTime(1)}'");
-                await deleteInvalidTokenCommand.ExecuteNonQueryAsync();
-            }
+            token = availableTokensReader.GetGuid(0);
+            validUntil = availableTokensReader.GetDateTime(1);
         }
 
         if(token != Guid.Empty)
@@ -94,7 +86,11 @@ public class PostgresAuthService(string connectionString) : IAuthService
             return new TokenResponse(token, validUntil);
         }
 
-        token = Guid.NewGuid();
+        var byteArr = Guid.NewGuid().ToByteArray();
+        byteArr[15] = (Byte)userId;
+
+        token = new Guid(byteArr);
+
         validUntil = DateTime.UtcNow.AddHours(5);
 
         var insertNewTokenCommand = AuthDataSource.CreateCommand($"INSERT INTO users_tokens (token, user_id, valid_until) VALUES ('{token}', {userId}, '{validUntil}')");
@@ -118,7 +114,7 @@ public class PostgresAuthService(string connectionString) : IAuthService
             result = userNameReader.GetString(0);
         }
 
-        if(result != string.Empty)
+        if (result != string.Empty)
         {
             throw new TakenUsernameException();
         }

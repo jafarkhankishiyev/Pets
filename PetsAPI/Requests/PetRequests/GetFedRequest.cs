@@ -2,7 +2,7 @@
 
 namespace PetsAPI.Requests.PetRequests
 {
-    public class GetFedRequest
+    public record GetFedRequest
     {
         public Guid Token { get; set; }
         public int PetId { get; set; }

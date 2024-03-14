@@ -2,7 +2,7 @@
 
 namespace PetsAPI.Requests.UserRequests;
 
-public class AddPetRequest
+public record AddPetRequest
 {
     public Guid Token { get; set; }
     public string PetName { get; set; }

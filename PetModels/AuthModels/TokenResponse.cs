@@ -1,7 +1,7 @@
 ﻿
 namespace Models.AuthModels;
 
-public class TokenResponse
+public record TokenResponse
 {
     public Guid Token { get; }
     public DateTime ValidUntil { get; }

@@ -36,3 +36,10 @@ C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\PetsAPI.genrunti
 C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\ref\PetsAPI.dll
 C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Npgsql.dll
 C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\obj\Debug\net8.0\PetsAPI.sourcelink.json
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Autofac.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Autofac.Integration.WebApi.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\System.Net.Http.Formatting.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\System.Web.Http.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Newtonsoft.Json.Bson.dll
+C:\Users\JafarKh\Documents\GitHub\Pets\PetsAPI\bin\Debug\net8.0\Autofac.Extensions.DependencyInjection.dll

@@ -1,6 +1,6 @@
 ﻿namespace PetsAPI.Requests.UserRequests;
 
-public class CommandRequest
+public record CommandRequest
 {
     public Guid Token { get; set; }
     public int PetId { get; set; }

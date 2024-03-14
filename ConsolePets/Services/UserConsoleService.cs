@@ -33,7 +33,7 @@ internal class UserConsoleService
 
     public async Task CommandAsync(Pet pet, string connectionString)
     {
-        PetService petService = PetService.GetAccordingPetService(new PostgresPetDBService(connectionString, pet));
+        PetService petService = new PetServiceFactory(new PostgresPetDBService(connectionString, pet)).GetAccordingPetService();
         string[] commands = petService.GetCommands();
         Console.Write("\nWhat command do you want to execute? Provide number: \n");
         StringBuilder commandList = new("");

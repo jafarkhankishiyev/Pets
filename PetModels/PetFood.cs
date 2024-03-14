@@ -1,8 +1,9 @@
-﻿using Pets.Models.Enumerations;
+﻿using Models;
+using Pets.Models.Enumerations;
 
 namespace Pets.Models;
 
-public class PetFood
+public class PetFood : BaseModel
 {
     public double Price { get; init; }
     public string Name { get; init; }

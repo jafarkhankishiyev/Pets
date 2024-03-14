@@ -1,11 +1,11 @@
-﻿using Pets.Models.Enumerations;
+﻿using Models;
+using Pets.Models.Enumerations;
 
 namespace Pets.Models.Pets;
 
-public class Pet
+public class Pet : BaseModel
 {
     //properties
-    public int Id { get; set; }
     public string Name { get; set; }
     public FurType FurColor { get; set; }
     public MoodType Mood { get; set; }

@@ -6,13 +6,17 @@ namespace CommonServices.DBServices.UserDB;
 
 public interface IUserDBService
 {
-    DbDataSource UserDataSource { get; }
-    User UserToServe { get;  set; }
+    public DbDataSource UserDataSource { get; }
+    public User UserToServe { get;  set; }
+    public string ConnectionString { get; set; }
 
-    Task AddPet(Pet pet);
-    Task SetCash(double balance);
-    Task AddFood(PetFood food);
-    Task RemoveFood(PetFood food);
-    Task<User> GetUser(Guid token);
-    Task ValidateToken(Guid token);
+    Task AddPetAsync(Pet pet);
+    Task SetCashAsync(double balance);
+    Task AddFoodAsync(PetFood food);
+    Task RemoveFoodAsync(PetFood food);
+    Task<User> GetUserAsync(Guid token);
+    Task ValidateTokenAsync(Guid token);
+    Task TopUpCash(double amount, string description);
+    Task WithdrawCash(double amount, string description);
+    void SetDataSource(string connectionString);
 }

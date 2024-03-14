@@ -25,13 +25,11 @@ public class UserService
     {
         foreach (Pet p in UserToServe.OwnedPets)
         {
-            var petService = PetService.GetAccordingPetService(new PostgresPetDBService(UserDB.UserDataSource.ConnectionString, p));
+            var petService = new PetServiceFactory(new PostgresPetDBService(UserDB.UserDataSource.ConnectionString, p)).GetAccordingPetService();
             await petService.MoodDownAsync();
         }
 
-        UserToServe.CashBalance += 50;
-        
-        await UserDB.SetCash(UserToServe.CashBalance);
+        await UserDB.TopUpCash(50, "Work");
     }
 
     public async Task<PetFood> CommandAsync(PetService petService, int commandExecuted)
@@ -56,7 +54,7 @@ public class UserService
             UserToServe.OwnedFood = arrToResize;
             UserToServe.OwnedFood[^1] = petFood;
 
-            await UserDB.AddFood(petFood);
+            await UserDB.AddFoodAsync(petFood);
             return petFood;
         }
         return null;
@@ -69,10 +67,10 @@ public class UserService
         Array.Resize(ref arrToResize, UserToServe.OwnedFood.Length + 1);
         UserToServe.OwnedFood = arrToResize;
         UserToServe.OwnedFood[^1] = petFood;
-        UserToServe.CashBalance -= petFood.Price;
 
-        await UserDB.AddFood(petFood);
-        await UserDB.SetCash(UserToServe.CashBalance);    
+        await UserDB.WithdrawCash(petFood.Price, $"Bought {petFood.Name}");
+
+        await UserDB.AddFoodAsync(petFood);
     }
 
     public async Task<bool> AddPetAsync(Pet pet)
@@ -91,7 +89,7 @@ public class UserService
                 UserToServe.OwnedPets = arrToResize;
                 UserToServe.OwnedPets[^1] = pet;
 
-                await UserDB.AddPet(pet);
+                await UserDB.AddPetAsync(pet);
 
                 return true;
             }

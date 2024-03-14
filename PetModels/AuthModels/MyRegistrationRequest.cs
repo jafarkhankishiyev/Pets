@@ -1,6 +1,6 @@
 ﻿namespace Models.AuthModels;
 
-public class MyRegistrationRequest
+public record MyRegistrationRequest
 {
     public string Username { get; set; }
     public string Password { get; set; }

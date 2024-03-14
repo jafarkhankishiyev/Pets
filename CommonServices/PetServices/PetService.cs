@@ -20,7 +20,7 @@ public abstract class PetService(IPetDBService petDB)
             m++;
             PetToServe.Mood = (MoodType)m;
 
-            await PetDB.SetMood(PetToServe.Mood);
+            await PetDB.SetMoodAsync(PetToServe.Mood);
         }
     }
 
@@ -32,7 +32,7 @@ public abstract class PetService(IPetDBService petDB)
             h--;
             PetToServe.Hunger = (HungerType)h;
 
-            await PetDB.SetHunger(PetToServe.Hunger);
+            await PetDB.SetHungerAsync(PetToServe.Hunger);
         }
     }
 
@@ -44,7 +44,7 @@ public abstract class PetService(IPetDBService petDB)
             m--;
             PetToServe.Mood = (MoodType)m;
 
-            await PetDB.SetMood(PetToServe.Mood);
+            await PetDB.SetMoodAsync(PetToServe.Mood);
         }
     }
 
@@ -56,7 +56,7 @@ public abstract class PetService(IPetDBService petDB)
             h++;
             PetToServe.Hunger = (HungerType)h;
 
-            await PetDB.SetHunger(PetToServe.Hunger);
+            await PetDB.SetHungerAsync(PetToServe.Hunger);
         }
     }
 
@@ -71,22 +71,12 @@ public abstract class PetService(IPetDBService petDB)
     public abstract string[] GetCommandExecution();
 
     public abstract bool ValidateFood(FoodType f);
-    public static PetService GetAccordingPetService(IPetDBService petDB)
-    {
-        PetService petService = petDB.PetToServe switch
-        {
-            Bear => new BearService(petDB),
-            Cat => new CatService(petDB),
-            Dog => new DogService(petDB),
-            Parrot => new ParrotService(petDB),
-            _ => throw new Exception(),
-        };
-        return petService;
-    }
+
+
 
     public async Task GetFedAsync(User UserToServe, PetFood food)
     {
-        PetService petService = PetService.GetAccordingPetService(PetDB);
+        var petService = new PetServiceFactory(petDB).GetAccordingPetService();
 
         if(!petService.ValidateFood(food.FoodType)) 
         {

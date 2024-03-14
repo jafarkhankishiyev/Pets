@@ -2,7 +2,7 @@
 
 namespace PetsAPI.Requests.UserRequests;
 
-public class RemoveFoodRequest
+public record RemoveFoodRequest
 {
     public Guid Token { get; set; }
 

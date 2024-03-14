@@ -1,22 +1,22 @@
-﻿using Pets.Models.Pets;
+﻿using Models;
+using Pets.Models.Pets;
 
 namespace Pets.Models;
 
-public class User
+public class User : BaseModel
 {
     private Pet[] ownedPets;
     private PetFood[] ownedFood;
 
-    public int Id { get; set; }
     public double CashBalance { get; set; }
-    public string UserName { get; set; }
+    public string Username { get; set; }
     public Pet[] OwnedPets { get { return ownedPets; } set { ownedPets = value; } }
     public PetFood[] OwnedFood { get { return ownedFood; } set { ownedFood = value; } }
 
     public User(string name) 
     {
-        UserName = name;
-        CashBalance = 500;
+        Username = name;
+        CashBalance = 0;
         OwnedPets = new Pet[0];
         OwnedFood = new PetFood[0];
     }

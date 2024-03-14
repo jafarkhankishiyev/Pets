@@ -41,7 +41,7 @@
     "Parameters": [
       {
         "Name": "getFedRequest",
-        "Type": "PetsAPI.Models.PetRequests.GetFedRequest",
+        "Type": "PetsAPI.Requests.PetRequests.GetFedRequest",
         "IsRequired": true
       }
     ],
@@ -57,7 +57,7 @@
     "Parameters": [
       {
         "Name": "getPetRequest",
-        "Type": "PetsAPI.Models.PetRequests.GetPetRequest",
+        "Type": "PetsAPI.Requests.PetRequests.GetPetRequest",
         "IsRequired": true
       }
     ],
@@ -99,7 +99,7 @@
     "Parameters": [
       {
         "Name": "addFoodRequest",
-        "Type": "PetsAPI.Models.UserRequests.AddFoodRequest",
+        "Type": "PetsAPI.Requests.UserRequests.AddFoodRequest",
         "IsRequired": true
       }
     ],
@@ -115,7 +115,7 @@
     "Parameters": [
       {
         "Name": "addPetRequest",
-        "Type": "PetsAPI.Models.UserRequests.AddPetRequest",
+        "Type": "PetsAPI.Requests.UserRequests.AddPetRequest",
         "IsRequired": true
       }
     ],
@@ -131,7 +131,7 @@
     "Parameters": [
       {
         "Name": "commandRequest",
-        "Type": "PetsAPI.Models.UserRequests.CommandRequest",
+        "Type": "PetsAPI.Requests.UserRequests.CommandRequest",
         "IsRequired": true
       }
     ],
